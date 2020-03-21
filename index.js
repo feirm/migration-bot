@@ -78,6 +78,36 @@ client.on("message", async message => {
             `❌ ${message.author}, I couldn't send you a PM. Please enable your PMs and then try the command again!`
           )
         );
+    })
+    .catch(error => {
+      // Error embed
+      let errorEmbed = new MessageEmbed()
+        .setTitle("Feirm Blockchain Migration")
+        .setColor("0xFF0000")
+        .setThumbnail("https://feirm.com/img/logo.3bad5560.png")
+        .setDescription(
+          `${message.author}, it seems we had an issue getting your migration request!`
+        )
+        .addField("Reason", "```\n" + error.response.data.error + "\n```")
+        .setFooter(
+          "Made with ❤️ by the Feirm developers",
+          "https://feirm.com/img/logo.3bad5560.png"
+        )
+        .setTimestamp();
+
+      message.author
+        .send(errorEmbed)
+        .then(() => {
+          message.channel.send(
+            `:white_check_mark: ${message.author}, I've sent you a PM!`
+          );
+        })
+        .catch(() =>
+          message.channel.send(
+            `❌ ${message.author}, I couldn't send you a PM. Please enable your PMs and then try the command again!`
+          )
+        );
+      message.delete();
     });
   }
 
