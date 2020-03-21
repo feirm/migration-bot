@@ -34,81 +34,86 @@ client.on("message", async message => {
 
   if (cmd == "swap-details") {
     // Get the request based on the args provded
-    let request = axios.get(`${config.api}/id/${args.toString()}`).then(res => {
-      // If the user isn't the one who initiated the request, then don't let them view it
-      if (message.author.id != res.data.discordId) {
-        message.channel.send(`:x: ${message.author}, you are not authorised to view the requested Migration!`)
-        message.delete();
-        return
-      }
+    let request = axios
+      .get(`${config.api}/id/${args.toString()}`)
+      .then(res => {
+        // If the user isn't the one who initiated the request, then don't let them view it
+        if (message.author.id != res.data.discordId) {
+          message.channel.send(
+            `:x: ${message.author}, you are not authorised to view the requested Migration!`
+          );
+          message.delete();
+          return;
+        }
 
-      // If a couple fields are empty, replace with N/A
-      if (res.data.receivingHash == "") {
-        res.data.receivingHash = "Not Detected"
-      }
-      if (res.data.sent_hash == "") {
-        res.data.sent_hash = "N/A"
-      }
+        // If a couple fields are empty, replace with N/A
+        if (res.data.receivingHash == "") {
+          res.data.receivingHash = "Not Detected";
+        }
+        if (res.data.sent_hash == "") {
+          res.data.sent_hash = "N/A";
+        }
 
-      msg = new MessageEmbed()
-        .setTitle("Feirm Blockchain Migration")
-        .setColor("0xFF6900")
-        .setThumbnail("https://feirm.com/img/logo.3bad5560.png")
-        .setDescription(
-          `${message.author}, here is an update for your request.`
-        )
-        .addField("Request ID", res.data.id)
-        .addField("Date Created", `${moment
-          .unix(res.data.timestamp)
-          .format("DD-MM-YYYY HH:mm")}`)
-        .addField("Status", `${res.data.status}`)
-        .addField("Incoming TXID (Old blockchain)", res.data.receivingHash)
-        .addField("Outgoing TXID (New blockchain)", res.data.sent_hash)
-        .addField("Amount", `${res.data.amount} XFE`)
+        msg = new MessageEmbed()
+          .setTitle("Feirm Blockchain Migration")
+          .setColor("0xFF6900")
+          .setThumbnail("https://feirm.com/img/logo.3bad5560.png")
+          .setDescription(
+            `${message.author}, here is an update for your request.`
+          )
+          .addField("Request ID", res.data.id)
+          .addField(
+            "Date Created",
+            `${moment.unix(res.data.timestamp).format("DD-MM-YYYY HH:mm")}`
+          )
+          .addField("Status", `${res.data.status}`)
+          .addField("Incoming TXID (Old blockchain)", res.data.receivingHash)
+          .addField("Outgoing TXID (New blockchain)", res.data.sent_hash)
+          .addField("Amount", `${res.data.amount} XFE`);
 
         message.author
-        .send(msg)
-        .then(() => {
-          message.channel.send(
-            `:white_check_mark: ${message.author}, I've sent you a PM! It should contain an update on your request!`
+          .send(msg)
+          .then(() => {
+            message.channel.send(
+              `:white_check_mark: ${message.author}, I've sent you a PM! It should contain an update on your request!`
+            );
+          })
+          .catch(() =>
+            message.channel.send(
+              `❌ ${message.author}, I couldn't send you a PM. Please enable your PMs and then try the command again!`
+            )
           );
-        })
-        .catch(() =>
-          message.channel.send(
-            `❌ ${message.author}, I couldn't send you a PM. Please enable your PMs and then try the command again!`
+      })
+      .catch(error => {
+        // Error embed
+        let errorEmbed = new MessageEmbed()
+          .setTitle("Feirm Blockchain Migration")
+          .setColor("0xFF0000")
+          .setThumbnail("https://feirm.com/img/logo.3bad5560.png")
+          .setDescription(
+            `${message.author}, it seems we had an issue getting your migration request!`
           )
-        );
-    })
-    .catch(error => {
-      // Error embed
-      let errorEmbed = new MessageEmbed()
-        .setTitle("Feirm Blockchain Migration")
-        .setColor("0xFF0000")
-        .setThumbnail("https://feirm.com/img/logo.3bad5560.png")
-        .setDescription(
-          `${message.author}, it seems we had an issue getting your migration request!`
-        )
-        .addField("Reason", "```\n" + error.response.data.error + "\n```")
-        .setFooter(
-          "Made with ❤️ by the Feirm developers",
-          "https://feirm.com/img/logo.3bad5560.png"
-        )
-        .setTimestamp();
+          .addField("Reason", "```\n" + error.response.data.error + "\n```")
+          .setFooter(
+            "Made with ❤️ by the Feirm developers",
+            "https://feirm.com/img/logo.3bad5560.png"
+          )
+          .setTimestamp();
 
-      message.author
-        .send(errorEmbed)
-        .then(() => {
-          message.channel.send(
-            `:white_check_mark: ${message.author}, I've sent you a PM!`
+        message.author
+          .send(errorEmbed)
+          .then(() => {
+            message.channel.send(
+              `:white_check_mark: ${message.author}, I've sent you a PM!`
+            );
+          })
+          .catch(() =>
+            message.channel.send(
+              `❌ ${message.author}, I couldn't send you a PM. Please enable your PMs and then try the command again!`
+            )
           );
-        })
-        .catch(() =>
-          message.channel.send(
-            `❌ ${message.author}, I couldn't send you a PM. Please enable your PMs and then try the command again!`
-          )
-        );
-      message.delete();
-    });
+        message.delete();
+      });
   }
 
   if (cmd === "swap") {
