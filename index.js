@@ -24,7 +24,7 @@ client.on("message", async message => {
   if (!message.content.startsWith(config.prefix)) return;
 
   // Make sure only messages are sent in that dedicated channel
-  if (message.channel.id != "687039111369850882") return;
+  if (message.channel.id != config.channel) return;
 
   const args = message.content
     .slice(config.prefix.length)

@@ -8,7 +8,8 @@ This is Discord bot acts as a client to the Feirm Migration API.
 {
     "token": "BOT_TOKEN",
     "prefix": "PREFIX",
-    "api": "API_ENDPOINT"
+    "api": "API_ENDPOINT",
+    "channel": "XXXXXXXX"
 }
 ```
 2. Install the necessary dependencies
