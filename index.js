@@ -71,6 +71,7 @@ client.on("message", async message => {
           .addField("Outgoing TXID (New blockchain)", res.data.sent_hash)
           .addField("Amount", `${res.data.amount} XFE`);
 
+        message.delete();
         message.author
           .send(msg)
           .then(() => {
@@ -114,6 +115,40 @@ client.on("message", async message => {
           );
         message.delete();
       });
+  }
+
+  if (cmd === "swap-stats") {
+    var pSwapped;
+    var rCount;
+
+    await axios.get(`${config.api}/stats`)
+      .then(res => {
+        pSwapped = res.data;
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+    await axios.get(`${config.api}/requests/count`)
+      .then(res => {
+        rCount = res.data;
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+    let embed = new MessageEmbed()
+      .setTitle("Feirm Blockchain Migration")
+      .setColor("0xFF6900")
+      .addField("Percentage Swapped", `${parseFloat(pSwapped).toFixed(2)}%`, true)
+      .addField("Completed Migrations", rCount, true)
+      .setTimestamp()
+      .setFooter(
+        "Made with ❤️ by the Feirm developers",
+        "https://feirm.com/img/logo.3bad5560.png"
+      )
+
+    await message.channel.send(embed)
   }
 
   if (cmd === "swap") {
